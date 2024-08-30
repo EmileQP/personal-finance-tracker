@@ -25,5 +25,104 @@ def index():
 
 @app.route("/login")
 def login():
-    return render_template("login.html")
+    """Log user in"""
+
+    # Forget any user_id
+    session.clear()
+
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        # Ensure username was submitted
+        if not request.form.get("username"):
+            return render_template("login.html", error="Incorrect Username!")
+
+        # Ensure password was submitted
+        elif not request.form.get("password"):
+            return render_template("login.html", error="Incorrect Password!")
+        username = request.form.get("username")
+        # Query database for username
+        rows = db.execute(
+            "SELECT * FROM users WHERE username = ?", request.form.get("username")
+        )
+
+        # Ensure username exists and password is correct
+        if len(rows) != 1 or not check_password_hash(
+            rows[0]["hash"], request.form.get("password")
+        ):
+            return render_template("login.html", error="Incorrect Username or Password!")
+
+        # Remember which user has logged in
+        session["user_id"] = rows[0]["id"]
+
+        # Redirect user to home page
+        flash(f"Welcome back {username}!", "success")
+        return redirect("/")
+
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+        return render_template("login.html")
+    
+
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
+
+@app.route("/register")
+def register():
+    """Register user"""
+    if request.method == "POST":
+        username1 = request.form.get("username")
+        password = request.form.get("password")
+        password2 = request.form.get("confirmation")
+
+        if password != password2:
+            return render_template("register.html", error="Passwords don't match!")
+
+        if not username1:
+            return render_template("register.html", error="Did not enter a Username!")
+
+        if not password:
+            return render_template("register.html", error="Did not enter a Password!")
+
+        password_hash = generate_password_hash(password)
+        usernames = db.execute(
+            "SELECT COUNT(username) as count FROM users WHERE username = ?", username1)
+
+        if usernames[0]["count"] > 0:
+            return render_template("register.html", error="Username is taken!")
+
+        db.execute("INSERT INTO users (username, hash) VALUES(?, ?)", username1, password_hash)
+        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+        session["user_id"] = rows[0]["id"]
+
+        flash("Registered!", "success")
+        return redirect("/")
+    else:
+        return render_template("register.html")
+
+@app.route("/income")
+@login_required
+def income():
+    return render_template("income.html") 
+
+@app.route("/expenses")
+@login_required
+def expenses():
+    return render_template("expenses.html") 
+
+@app.route("/budget")
+@login_required
+def budget():
+    return render_template("budget.html") 
+
+@app.route("/savings")
+@login_required
+def savings():
+    return render_template("savings.html") 
 
