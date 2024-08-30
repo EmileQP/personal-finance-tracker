@@ -22,3 +22,7 @@ db = SQL("sqlite:///finance.db")
 @login_required
 def index():
     return render_template("index.html")
+
+@app.route("/login")
+def login():
+    return render_template("income.html")
