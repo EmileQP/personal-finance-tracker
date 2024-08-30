@@ -5,7 +5,7 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required, lookup, usd
-
+# To run the virtual environment in debug mode python -m flask run --debug
 app = Flask(__name__)
 
 app.jinja_env.filters["usd"] = usd
@@ -27,5 +27,3 @@ def index():
 def login():
     return render_template("login.html")
 
-if __name__ == "__main__":
-    app.run(debug=True)
