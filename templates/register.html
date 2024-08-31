@@ -5,5 +5,13 @@
 {% endblock %}
 
 {% block main %}
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae, est. Iusto dolorem ad deserunt! Sed cum mollitia ad, libero similique excepturi optio molestiae eos eligendi cupiditate veritatis, veniam, modi voluptate!</p>
+    <form action="/register">
+        <input placeholder="Username" name="username" type="text" required></input>
+        <input placeholder="Password" name="password" type="password" required></input>
+        <input placeholder="Password Confirmation" name="confirmation" type="password" required></input>
+    </form>
+    <button type="submit">Register</button>
+    {% if error %}
+        <p><b>{{ error }}</b></p>
+    {% endif %}
 {% endblock %}

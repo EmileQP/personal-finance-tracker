@@ -7,4 +7,8 @@
 {% block main %}
 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae, est. Iusto dolorem ad deserunt! Sed cum mollitia ad, libero similique excepturi optio molestiae eos eligendi cupiditate veritatis, veniam, modi voluptate!</p>
 
+{% if error %}
+<p><b>{{ error }}</b></p>
+{% endif %}
+
 {% endblock %}
