@@ -5,13 +5,15 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/login">
-        <input placeholder="Username" name="username" type="text" required></input>
-        <input placeholder="Password" name="password" type="password" required></input>
-    </form>
-    <button type="submit">Log In</button>
-    {% if error %}
+    <form action="/login" method="post">
+        <input autocomplete="off" autofocus placeholder="Username" name="username" type="text" required></input>
+        <input autocomplete="off" autofocus placeholder="Password" name="password" type="password" required></input>
+        {% if error %}
         <p><b>{{ error }}</b></p>
-    {% endif %}
+        {% endif %}
+        <button type="submit">Log In</button>
+    
+    </form>
+
 
 {% endblock %}

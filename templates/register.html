@@ -5,13 +5,14 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/register">
+    <form action="/register" method="post">
         <input placeholder="Username" name="username" type="text" required></input>
         <input placeholder="Password" name="password" type="password" required></input>
         <input placeholder="Password Confirmation" name="confirmation" type="password" required></input>
-    </form>
-    <button type="submit">Register</button>
-    {% if error %}
+        {% if error %}
         <p><b>{{ error }}</b></p>
-    {% endif %}
+        {% endif %}
+        <button class="border border-sky-100 bg-sky-500 hover:bg-sky-700" type="submit">Register</button>
+    </form>
+    
 {% endblock %}

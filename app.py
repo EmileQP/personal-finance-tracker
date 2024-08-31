@@ -23,7 +23,7 @@ db = SQL("sqlite:///finance.db")
 def index():
     return render_template("index.html")
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
 
@@ -47,7 +47,7 @@ def login():
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(
-            rows[0]["hash"], request.form.get("password")
+            rows[0]["password"], request.form.get("password")
         ):
             return render_template("login.html", error="Incorrect Username or Password!")
 
@@ -63,7 +63,7 @@ def login():
         return render_template("login.html")
     
 
-@app.route("/logout")
+@app.route("/logout", methods=["GET", "POST"])
 def logout():
     """Log user out"""
 
@@ -73,7 +73,7 @@ def logout():
     # Redirect user to login form
     return redirect("/")
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
     if request.method == "POST":
@@ -97,7 +97,7 @@ def register():
         if usernames[0]["count"] > 0:
             return render_template("register.html", error="Username is taken!")
 
-        db.execute("INSERT INTO users (username, hash) VALUES(?, ?)", username1, password_hash)
+        db.execute("INSERT INTO users (username, password) VALUES(?, ?)", username1, password_hash)
         rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
         session["user_id"] = rows[0]["id"]
 
@@ -106,22 +106,22 @@ def register():
     else:
         return render_template("register.html")
 
-@app.route("/income")
+@app.route("/income", methods=["GET", "POST"])
 @login_required
 def income():
     return render_template("income.html") 
 
-@app.route("/expenses")
+@app.route("/expenses", methods=["GET", "POST"])
 @login_required
 def expenses():
     return render_template("expenses.html") 
 
-@app.route("/budget")
+@app.route("/budget", methods=["GET", "POST"])
 @login_required
 def budget():
     return render_template("budget.html") 
 
-@app.route("/savings")
+@app.route("/savings", methods=["GET", "POST"])
 @login_required
 def savings():
     return render_template("savings.html") 
