@@ -8,55 +8,95 @@
         <meta name="viewport" content="initial-scale=1, width=device-width">
 
         <!-- http://getbootstrap.com/docs/5.3/ -->
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="static/css/styles.css">
         
         <title>{% block title %}{% endblock %} - Rocket</title>
 
     </head>
-
+    
     <body>
-
-        <nav class="bg-gray-100 border-b border-gray-300 ">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <a class="text-xl font-semibold text-gray-800" href="/">Rocket</a>
-                <button class="block md:hidden text-gray-600 focus:outline-none" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navbar">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                    </svg>
-                </button>
-                <div class="hidden md:flex md:items-center md:w-auto w-full" id="navbar">
-                    {% if session["user_id"] %}
-                        <ul class="flex flex-col md:flex-row md:space-x-4">
-                            <li><a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md" href="/income">Income</a></li>
-                            <li><a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md" href="/expenses">Expenses</a></li>
-                            <li><a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md" href="/budget">Budget</a></li>
-                            <li><a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md" href="/savings">Savings</a></li>
-                        </ul>
-                        <ul class="flex flex-col md:flex-row md:space-x-4 mt-2 md:mt-0 md:ml-auto">
-                            <li><a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md" href="/logout">Log Out</a></li>
-                        </ul>
-                    {% else %}
-                        <ul class="flex flex-col md:flex-row md:space-x-4 mt-2 md:mt-0 md:ml-auto">
-                            <li><a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md" href="/register">Register</a></li>
-                            <li><a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md" href="/login">Log In</a></li>
-                        </ul>
-                    {% endif %}
+        
+        <main>  
+            <aside class="left-column">
+                <ul class="nav-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Explore</a></li>
+                    <li><a href="#">Notifications</a></li>
+                    <li><a href="#">Messages</a></li>
+                    <li><a href="#">Bookmarks</a></li>
+                    <li><a href="#">Profile</a></li>
+                    <li><a href="/logout">Log out</a></li>
+                </ul>
+            </aside>
+            
+            <div class="center-column">
+                
+                {% block main %}{% endblock %}
+                {% if get_flashed_messages() %}
+            <header>
+                <div class="alert alert-primary mb-0 text-center" role="alert">
+                    {{ get_flashed_messages() | join(" ") }}
                 </div>
-            </div>
-        </nav>
-
-        {% if get_flashed_messages() %}
-        <header>
-            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative text-center mb-0" role="alert">
-                {{ get_flashed_messages() | join(" ") }}
-            </div>
-        </header>
+            </header>
         {% endif %}
-
-        <main class="container mx-auto py-12 text-center">
-            {% block main %}{% endblock %}
+            </div>
+            <aside class="right-column">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="who-to-follow">
+                    <h3>Who to Follow</h3>
+                    <ul>
+                        <li>User1 <button class="button">Follow</button></li>
+                        <li>User2 <button class="button">Follow</button></li>
+                        <li>User3 <button class="button">Follow</button></li>
+                    </ul>
+                </div>
+                <div class="trending">
+                    <h3>Trending</h3>
+                    <ol> <!-- use jinja to make a limit 10 for loop-->
+                        <li>#Trend1</li>
+                        <li>#Trend2</li>
+                        <li>#Trend3</li>
+                        <li>#Trend4</li>
+                        <li>#Trend5</li>
+                        <li>#Trend6</li>
+                        <li>#Trend7</li>
+                        <li>#Trend8</li>
+                        <li>#Trend9</li>
+                        <li>#Trend10</li>
+                    </ol>
+                </div>
+                
+            </aside>
         </main>
-    </body>
+        <script>
+            function showTab(tabId) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.style.display = 'none';
+        });
+        
+        // Show the selected tab
+        document.querySelector(`#${tabId}`).style.display = 'block';
+        
+        // Remove 'active' class from all buttons
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // Add 'active' class to the clicked button
+        document.querySelector(`button[onclick="showTab('${tabId}')"]`).classList.add('active');
+    }
 
+    // Set default tab
+    document.addEventListener('DOMContentLoaded', () => {
+        showTab('following'); // Change 'following' to the ID of the default tab you want to show
+        });
+        </script>
+    </body>
+   
 </html>

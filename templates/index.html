@@ -5,5 +5,49 @@
 {% endblock %}
 
 {% block main %}
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae, est. Iusto dolorem ad deserunt! Sed cum mollitia ad, libero similique excepturi optio molestiae eos eligendi cupiditate veritatis, veniam, modi voluptate!</p>
+    <div class="tabs">
+        <button class="tab-button active" onclick="showTab('following')">Following</button>
+        <button class="tab-button" onclick="showTab('popular')">Popular</button>
+    </div>
+    <div class="tab-content" id="following">
+        <!-- Posts from people you follow -->
+        
+        <div class="tweet">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScKgvoMVHyOGfHJ82ZGcrYpdE2FbRBJzuE_w&s" alt="Profile Picture" class="tweet-pic">
+            <div class="tweet-content">
+                <h3>Superman</h3>
+                <p>This is a sample post from someone you follow.</p>
+                <div class="tweet-actions">
+                    <button>Like</button>
+                    <button>Retweet</button>
+                    <button>Reply</button>
+                </div>
+            </div>
+        </div>
+        <div class="tweet-box">
+            <textarea placeholder="What's on your mind?"></textarea>
+            <button>Post</button>
+        </div>
+        <!-- More posts -->
+    </div>
+    <div class="tab-content" id="popular" style="display:none;">
+        <!-- Popular posts -->
+        <div class="tweet">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScKgvoMVHyOGfHJ82ZGcrYpdE2FbRBJzuE_w&s" alt="Profile Picture" class="tweet-pic">
+            <div class="tweet-content">
+                <h3>Superman</h3>
+                <p>This is a popular post.</p>
+                <div class="tweet-actions">
+                    <button>Like</button>
+                    <button>Retweet</button>
+                    <button>Reply</button>
+                </div>
+            </div>
+        </div>
+        <div class="tweet-box">
+            <textarea placeholder="What's on your mind?"></textarea>
+            <button type="submit">Post</button>
+        </div>
+    <!-- More posts -->
+    </div>
 {% endblock %}

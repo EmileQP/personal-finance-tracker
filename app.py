@@ -4,19 +4,21 @@ from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import login_required, lookup, usd
+from helpers import login_required
+from datetime import timedelta
 # To run the virtual environment in debug mode python -m flask run --debug
 app = Flask(__name__)
 
-app.jinja_env.filters["usd"] = usd
 
 # Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_PERMANENT"] = True  # Set session to be permanent
+app.config["SESSION_TYPE"] = "filesystem"  # Store session data in the filesystem
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=4)  # Set session lifetime to 7 days
+
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///finance.db")
+db = SQL("sqlite:///rocket.db")
 
 @app.route("/")
 @login_required
@@ -42,9 +44,10 @@ def login():
         username = request.form.get("username")
         # Query database for username
         rows = db.execute(
-            "SELECT * FROM users WHERE username = ?", request.form.get("username")
+            "SELECT * FROM users WHERE username = ? OR email = ?", username, username
         )
-
+        if  '@' in username:
+            username = db.execute("SELECT username FROM users WHERE email=?", username)[0]['username']
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(
             rows[0]["password"], request.form.get("password")
@@ -80,12 +83,15 @@ def register():
         username1 = request.form.get("username")
         password = request.form.get("password")
         password2 = request.form.get("confirmation")
-
+        email = request.form.get("email")
         if password != password2:
             return render_template("register.html", error="Passwords don't match!")
 
         if not username1:
             return render_template("register.html", error="Did not enter a Username!")
+        
+        if not email:
+            return render_template("register.html", error="Did not enter an Email!")
 
         if not password:
             return render_template("register.html", error="Did not enter a Password!")
@@ -97,7 +103,7 @@ def register():
         if usernames[0]["count"] > 0:
             return render_template("register.html", error="Username is taken!")
 
-        db.execute("INSERT INTO users (username, password) VALUES(?, ?)", username1, password_hash)
+        db.execute("INSERT INTO users (username, password, email) VALUES(?, ?, ?)", username1, password_hash, email)
         rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
         session["user_id"] = rows[0]["id"]
 
@@ -105,24 +111,4 @@ def register():
         return redirect("/")
     else:
         return render_template("register.html")
-
-@app.route("/income", methods=["GET", "POST"])
-@login_required
-def income():
-    return render_template("income.html") 
-
-@app.route("/expenses", methods=["GET", "POST"])
-@login_required
-def expenses():
-    return render_template("expenses.html") 
-
-@app.route("/budget", methods=["GET", "POST"])
-@login_required
-def budget():
-    return render_template("budget.html") 
-
-@app.route("/savings", methods=["GET", "POST"])
-@login_required
-def savings():
-    return render_template("savings.html") 
 

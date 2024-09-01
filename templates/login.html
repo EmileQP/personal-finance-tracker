@@ -5,15 +5,19 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/login" method="post">
-        <input autocomplete="off" autofocus placeholder="Username" name="username" type="text" required></input>
-        <input autocomplete="off" autofocus placeholder="Password" name="password" type="password" required></input>
-        {% if error %}
-        <p><b>{{ error }}</b></p>
-        {% endif %}
-        <button type="submit">Log In</button>
-    
-    </form>
+<form  class="float-center" action="/login" method="post">
+    <div class="button-center">
+        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="Username" type="text">
+    </div>
+    <div class="button-center">
+        <input class="form-control mx-auto w-auto" name="password" placeholder="Password" type="password">
+    </div>
+    {% if error %}
+    <p class="button-center"><b>{{ error }}</b></p>
+    {% endif %}
+    <button class="button button-center" type="submit">Log In</button>
+    <a href="/register" class="button button-center">Register</a>
+</form>
 
 
 {% endblock %}

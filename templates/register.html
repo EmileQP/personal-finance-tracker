@@ -5,14 +5,24 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/register" method="post">
-        <input placeholder="Username" name="username" type="text" required></input>
-        <input placeholder="Password" name="password" type="password" required></input>
-        <input placeholder="Password Confirmation" name="confirmation" type="password" required></input>
-        {% if error %}
-        <p><b>{{ error }}</b></p>
-        {% endif %}
-        <button class="border border-sky-100 bg-sky-500 hover:bg-sky-700" type="submit">Register</button>
-    </form>
+<form class="float-center" action="/register" method="post">
+    <div class="mb-3">
+        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="Username" type="text" >
+    </div>
+    <div class="mb-3">
+        <input class="form-control mx-auto w-auto" name="email" placeholder="Email" type="email">
+    </div>
+    <div class="mb-3">
+        <input class="form-control mx-auto w-auto" name="password" placeholder="Password" type="password">
+    </div>
+    <div class="mb-3">
+        <input class="form-control mx-auto w-auto" name="confirmation" placeholder="Password(Again)" type="password">
+    </div>
+    {% if error %}
+    <p class="red_text"><b>{{ error }}</b></p>
+    {% endif %}
+    <button class="button" type="submit">Register</button>
+    <a href="/login" class="button-center">Already have an account?</a>
+</form>
     
 {% endblock %}
