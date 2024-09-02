@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Contacts
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <h1 class="mt-4 mb-4 text-center">Your Contacts</h1>
+    
+    <!-- Search bar for finding new contacts -->
+    <div class="mb-4">
+        <form action="{{ url_for('contacts') }}" method="get" class="d-flex">
+            <input type="text" name="query" placeholder="Search for users..." class="form-control me-2">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
+    <ul class="list-group">
+        {% for contact in contacts %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <!-- Placeholder for profile picture -->
+                    <img src="https://via.placeholder.com/40" alt="Profile Picture" class="rounded-circle me-3">
+                    <span class="fw-bold">{{ contact.username }}</span>
+                </div>
+                <button onclick="showMessages({{ contact.id }})" class="btn btn-outline-primary btn-sm">Message</button>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- Place script at the end of the content block -->
+<script>
+    function showMessages(contactId) {
+        window.location.href = `/messages/${contactId}`;
+    }
+</script>
+{% endblock %}

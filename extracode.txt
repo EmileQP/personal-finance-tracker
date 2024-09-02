@@ -1,0 +1,18 @@
+<div class="messages-app">
+    <div class="chat-window">
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message-container {% if message.sender == 'user1' %}message-right{% else %}message-left{% endif %}">
+                    <div class="message-content">
+                        <p>{{ message.text }}</p>
+                        <span class="timestamp">{{ message.timestamp }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <form class="message-input" action=/messages method="post">
+            <textarea placeholder="Type your message..." minlength="0" maxlength="160" name="send-text"></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</div>

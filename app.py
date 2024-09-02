@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required
@@ -21,14 +21,12 @@ Session(app)
 db = SQL("sqlite:///rocket.db")
 
 @app.route("/")
-@login_required
 def index():
     return render_template("index.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
-
     # Forget any user_id
     session.clear()
 
@@ -111,4 +109,45 @@ def register():
         return redirect("/")
     else:
         return render_template("register.html")
+    
 
+@app.route('/messages/<int:contact_id>', methods=['GET', 'POST'])
+@login_required
+def messages(contact_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+
+    if request.method == 'POST':
+        message = request.form['message']
+        if message:
+            db.execute('''
+                INSERT INTO messages (sender_id, receiver_id, message)
+                VALUES (?, ?, ?)
+            ''', (user_id, contact_id, message))
+            flash('Message sent!')
+        return redirect(url_for('messages', contact_id=contact_id))
+
+    messages = db.execute('''
+        SELECT message FROM messages
+        WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+        ORDER BY timestamp
+    ''', (user_id, contact_id, contact_id, user_id))
+
+    contact = db.execute('SELECT * FROM users WHERE id = ?', (contact_id,))
+    return render_template('messages.html', messages=messages, contact=contact)
+
+@app.route('/contacts')
+@login_required
+def contacts():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user_id = session['user_id']
+    contacts = db.execute('''
+        SELECT u.id, u.username
+        FROM contacts c
+        JOIN users u ON c.contact_id = u.id
+        WHERE c.user_id = ?
+    ''', (user_id,))
+    return render_template('contacts.html', contacts=contacts)

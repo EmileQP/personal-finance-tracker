@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Messages
+{% endblock %}
+
+{% block main %}
+<h1>Messages with {{ contact.username }}</h1>
+    <div class="messages-container">
+        <div class="messages">
+            {% for message in messages %}
+                <div class="{{ 'message-sent' if message.sender_id == session['user_id'] else 'message-received' }}">
+                    <p>{{ message.message }}</p>
+                    <span>{{ message.timestamp }}</span>
+                </div>
+            {% endfor %}
+        </div>
+        <form action="" method="post">
+            <textarea name="message" placeholder="Type your message here..."></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <a href="{{ url_for('contacts') }}">Back to Contacts</a>
+
+
+<script src="script.js"></script>
+{% endblock %}
+
+<!--
+Messages data insert template:
+messages = [
+    {"sender": "user1", "text": "Hello!", "timestamp": "10:00 AM"},
+    {"sender": "user2", "text": "Hi there!", "timestamp": "10:01 AM"},
+    {"sender": "user1", "text": "How are you?", "timestamp": "10:02 AM"},
+    {"sender": "user2", "text": "I'm good, thanks!", "timestamp": "10:03 AM"}
+]
+-->
