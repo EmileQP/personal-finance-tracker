@@ -4,8 +4,8 @@ from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import login_required
-from datetime import timedelta
+from helpers import login_required, format_timestamp
+from datetime import timedelta, datetime
 # To run the virtual environment in debug mode python -m flask run --debug
 app = Flask(__name__)
 
@@ -19,6 +19,9 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///rocket.db")
+
+# Filter
+app.jinja_env.filters['format_timestamp'] = format_timestamp
 
 @app.route("/")
 def index():
@@ -125,8 +128,7 @@ def messages(contact_id):
             db.execute('''
                 INSERT INTO messages (sender_id, receiver_id, message)
                 VALUES (?, ?, ?)
-            ''', (user_id, contact_id, message))
-            flash('Message sent!')
+            ''', int(user_id), int(contact_id), str(message))
         return redirect(url_for('messages', contact_id=contact_id))
 
     messages = db.execute('''
@@ -145,10 +147,51 @@ def contacts():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     user_id = session['user_id']
+    add_contacts = db.execute(
+        "SELECT DISTINCT sender_id FROM messages WHERE receiver_id = ? AND sender_id != ?", 
+        user_id, user_id
+    )
+    add_contacts2 = db.execute(
+        "SELECT DISTINCT receiver_id FROM messages WHERE sender_id = ? AND receiver_id != ?", 
+        user_id, user_id
+    )
+
+    # Add contacts from the first query if they do not already exist
+    for contact in add_contacts:
+        contact_id = contact['sender_id']
+        # Check if the contact already exists
+        existing_contact = db.execute(
+            "SELECT 1 FROM contacts WHERE user_id = ? AND contact_id = ?", 
+            user_id, contact_id
+        )
+        if not existing_contact:
+            db.execute(
+                "INSERT INTO contacts (user_id, contact_id) VALUES (?, ?)", 
+                user_id, contact_id
+            )
+
+    # Add contacts from the second query if they do not already exist
+    for contact in add_contacts2:
+        contact_id = contact['receiver_id']
+        # Check if the contact already exists
+        existing_contact = db.execute(
+            "SELECT 1 FROM contacts WHERE user_id = ? AND contact_id = ?", 
+            user_id, contact_id
+        )
+        if not existing_contact:
+            db.execute(
+                "INSERT INTO contacts (user_id, contact_id) VALUES (?, ?)", 
+                user_id, contact_id
+            )
+    msg = {}
+            
+    latest = db.execute("SELECT message FROM messages WHERE sender_id = ? OR receiver_id = ? ORDER BY timestamp ASC", user_id, user_id)[0]['message']
+    sender = db.execute("SELECT sender_id FROM messages WHERE sender_id = ? OR receiver_id = ? ORDER BY timestamp ASC", user_id, user_id)[0]['sender_id']
+    name = db.execute("SELECT username FROM users WHERE id = ?", sender)[0]['username']
     contacts = db.execute('''
         SELECT u.id, u.username
         FROM contacts c
         JOIN users u ON c.contact_id = u.id
         WHERE c.user_id = ?
     ''', (user_id,))
-    return render_template('contacts.html', contacts=contacts)
+    return render_template('contacts.html', contacts=contacts, message=latest, sender=name)

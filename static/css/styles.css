@@ -11,6 +11,7 @@ body {
     background-color: #f0f2f5;
     color: #333;
     display: flex;
+    overflow-y: hidden;
 }
 
 header {
@@ -349,7 +350,7 @@ footer {
 .messages {
     flex-grow: 1;
     padding: 20px;
-    overflow-y: auto;
+    overflow-y: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -474,13 +475,16 @@ footer {
 }
 .messages {
     width: 80%;
-    max-height: 700px;
+    max-height: 730px;
     overflow-y: scroll;
+    word-wrap: break-word;  /* Ensures text wraps within the message box */
+    overflow-wrap: break-word;  /* Also ensures text wraps */
+    word-break: break-all;  /* Optional: ensures very long words break */
 }
 
 .message-sent, .message-received {
     margin-top: 20px;
-    padding: 10px;
+    padding: 14px;
     padding-bottom:0px;
     border-radius: 25px;
     font-family: "Open Sans", sans-serif;
@@ -578,4 +582,9 @@ footer {
 .messages::-webkit-scrollbar-button {
     height: 0;
     width: 0
+ }
+
+ .latest-message-contacts{
+    color:#b8b7b6;
+    margin-left:20px;
  }

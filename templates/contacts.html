@@ -24,8 +24,12 @@
                     <!-- Placeholder for profile picture -->
                     <img src="https://via.placeholder.com/40" alt="Profile Picture" class="rounded-circle me-3">
                     <span class="fw-bold">{{ contact.username }}</span>
+                    <div class="latest-message-contacts">
+                        {{ sender }}: {{ message }}
+                    </div>
                 </div>
-                <button onclick="showMessages({{ contact.id }})" class="btn btn-outline-primary btn-sm">Message</button>
+                
+                <button onclick="showMessages({{ contact.id }})" class="button">Message</button>
             </li>
         {% endfor %}
     </ul>

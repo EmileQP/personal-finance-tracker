@@ -16,7 +16,7 @@
                     <p>{{ message.message }}</p>
                     
                 </div>
-                <span class="{{ 'message-sent1' if message.sender_id == session['user_id'] else 'message-received1' }}"> {{ message.timestamp }}</span>
+                <span class="{{ 'message-sent1' if message.sender_id == session['user_id'] else 'message-received1' }}"> {{ message.timestamp | format_timestamp }}</span>
             {% endfor %}
         </div>
         <form action="/messages/{{ contact_me }}" method="post">
