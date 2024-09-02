@@ -130,13 +130,14 @@ def messages(contact_id):
         return redirect(url_for('messages', contact_id=contact_id))
 
     messages = db.execute('''
-        SELECT message FROM messages
+        SELECT * FROM messages
         WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
         ORDER BY timestamp
-    ''', (user_id, contact_id, contact_id, user_id))
+    ''', int(user_id), int(contact_id), int(contact_id), int(user_id))
 
-    contact = db.execute('SELECT * FROM users WHERE id = ?', (contact_id,))
-    return render_template('messages.html', messages=messages, contact=contact)
+    contact1 = db.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+    contact2 = db.execute('SELECT username FROM users WHERE id = ?', (contact_id,))
+    return render_template('messages.html', messages=messages, contact1=contact1[0]['username'], contact2=contact2[0]['username'], contact_me=contact_id)
 
 @app.route('/contacts')
 @login_required

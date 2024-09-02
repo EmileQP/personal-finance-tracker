@@ -457,19 +457,38 @@ footer {
     display: flex;
     flex-direction: column;
     align-items: center;
+    height:100%;
 }
-
+.messages-container textarea {
+    padding:10px;
+    border: 1px solid #e1e8ed;
+    width:550px;
+    font-size: 16px;
+    resize: none;
+    border-radius:10px;
+    margin-left:20px;
+    
+}
+.messages-container button {
+    margin-left:20px;
+}
 .messages {
     width: 80%;
-    max-height: 400px;
+    max-height: 700px;
     overflow-y: scroll;
-    margin-bottom: 10px;
 }
 
 .message-sent, .message-received {
-    margin-bottom: 10px;
+    margin-top: 20px;
     padding: 10px;
-    border-radius: 5px;
+    padding-bottom:0px;
+    border-radius: 25px;
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-variation-settings:
+    "wdth" 99.6;
 }
 
 .message-sent {
@@ -481,11 +500,25 @@ footer {
     background-color: #f1f1f1;
     align-self: flex-start;
 }
+.message-sent1 {
+    background-color: transparent;
+    align-self: flex-end;
+    font-size:12px;
+    padding-right:10px;
+}
+
+.message-received1 {
+    background-color: transparent;
+    align-self: flex-start;
+    font-size:12px;
+    padding-left:10px;
+}
+
 
 .list-group-item {
     background-color: #f8f9fa;
     border: none;
-    margin-bottom: 10px;
+  
     border-radius: 10px;
     transition: background-color 0.3s ease;
 }
@@ -502,3 +535,47 @@ footer {
     background-color: #007bff;
     color: white;
 }
+
+.backwards-arrow{
+    margin-top:5px;
+    margin-right:20px;
+    width:40px;
+}
+
+.messages-header{
+    display:flex;
+    flex-direction:row;
+}
+
+.messages::-webkit-scrollbar {
+    width: 6px; /* Thin scrollbar width */
+}
+
+.messages::-webkit-scrollbar-track {
+    background: transparent; /* Hide the track */
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar handle */
+    border-radius: 30px; /* Round the scrollbar handle */
+    border: none; /* Remove any border */
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker color on hover */
+}
+
+/* Remove the scrollbar arrows */
+.messages::-webkit-scrollbar-button {
+    display: none; /* Hides the up and down arrows */
+}
+
+/* For Firefox */
+.messages {
+    scrollbar-width: thin; /* Thin scrollbar */
+    scrollbar-color: #888 transparent; /* Scrollbar handle with no visible track */
+}
+.messages::-webkit-scrollbar-button {
+    height: 0;
+    width: 0
+ }

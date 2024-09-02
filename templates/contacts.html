@@ -9,10 +9,11 @@
     <h1 class="mt-4 mb-4 text-center">Your Contacts</h1>
     
     <!-- Search bar for finding new contacts -->
+
     <div class="mb-4">
         <form action="{{ url_for('contacts') }}" method="get" class="d-flex">
             <input type="text" name="query" placeholder="Search for users..." class="form-control me-2">
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" class="button">Search</button>
         </form>
     </div>
 

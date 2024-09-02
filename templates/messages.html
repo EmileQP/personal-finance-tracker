@@ -5,25 +5,50 @@
 {% endblock %}
 
 {% block main %}
-<h1>Messages with {{ contact.username }}</h1>
+<div class="messages-header">
+<a href="/contacts"><img class="backwards-arrow"src="http://127.0.0.1:5000/static/images/arrow-ios-back.svg" alt="Back to main"></a>
+<h1>Messages with {{ contact2 }}</h1>
+</div>
     <div class="messages-container">
         <div class="messages">
             {% for message in messages %}
                 <div class="{{ 'message-sent' if message.sender_id == session['user_id'] else 'message-received' }}">
                     <p>{{ message.message }}</p>
-                    <span>{{ message.timestamp }}</span>
+                    
                 </div>
+                <span class="{{ 'message-sent1' if message.sender_id == session['user_id'] else 'message-received1' }}"> {{ message.timestamp }}</span>
             {% endfor %}
         </div>
-        <form action="" method="post">
+        <form action="/messages/{{ contact_me }}" method="post">
             <textarea name="message" placeholder="Type your message here..."></textarea>
-            <button type="submit">Send</button>
+            <button type="submit" class="button">Send</button>
         </form>
     </div>
-    <a href="{{ url_for('contacts') }}">Back to Contacts</a>
+    <script>
+        function scrollToBottom() {
+        const messagesContainer = document.querySelector('.messages');
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
 
+    // Scroll to the bottom when the page loads
+    window.onload = scrollToBottom;
 
-<script src="script.js"></script>
+    // Handle the form submission
+    const messageForm = document.getElementById('message-form');
+    messageForm.addEventListener('submit', function(e) {
+        // Prevent default form submission
+        e.preventDefault();
+
+        // You would normally send the message via AJAX here
+        // For now, we'll just scroll to the bottom
+        scrollToBottom();
+
+        // After submitting the form, you might want to reload the page or
+        // update the messages list via AJAX, depending on your setup.
+        // For example, you could use fetch() to send the message and then reload the messages.
+    });
+    </script>
+
 {% endblock %}
 
 <!--
