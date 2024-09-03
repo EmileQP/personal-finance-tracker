@@ -6,57 +6,108 @@
 
 {% block main %}
 <div class="messages-header">
-<a href="/contacts"><img class="backwards-arrow"src="http://127.0.0.1:5000/static/images/arrow-ios-back.svg" alt="Back to main"></a>
-<h1>Messages with {{ contact2 }}</h1>
+    <a href="/contacts"><img class="backwards-arrow" src="http://127.0.0.1:5000/static/images/arrow-ios-back.svg" alt="Back to main"></a>
+    <h1>Messages with {{ contact2 }}</h1>
 </div>
-    <div class="messages-container">
-        <div class="messages">
-            {% for message in messages %}
-                <div class="{{ 'message-sent' if message.sender_id == session['user_id'] else 'message-received' }}">
-                    <p>{{ message.message }}</p>
-                    
-                </div>
-                <span class="{{ 'message-sent1' if message.sender_id == session['user_id'] else 'message-received1' }}"> {{ message.timestamp | format_timestamp }}</span>
-            {% endfor %}
-        </div>
-        <form action="/messages/{{ contact_me }}" method="post">
-            <textarea name="message" placeholder="Type your message here..."></textarea>
-            <button type="submit" class="button">Send</button>
-        </form>
+
+<div class="messages-container" id="messages-container">
+    <div class="messages">
+        {% for message in messages %}
+            <div class="{{ 'message-sent' if message.sender_id == session['user_id'] else 'message-received' }}">
+                <p>{{ message.message }}</p>
+                
+            </div>
+            <span class="{{ 'message-sent1' if message.sender_id == session['user_id'] else 'message-received1' }}">
+                {{ message.timestamp | format_timestamp }}
+            </span>
+        {% endfor %}
     </div>
-    <script>
+    <form id="message-form" action="/messages/{{ contact_me }}" method="post">
+        <textarea autofocus id="message-textarea" name="message" placeholder="Type your message here..."></textarea>
+        <button type="submit" class="button">Send</button>
+    </form>
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const messagesContainer = document.getElementById('messages-container');
+        const messageForm = document.getElementById('message-form');
+        const messageTextarea = document.getElementById('message-textarea');
+        let page = 1;
+        const limit = 20;
+        let isLoading = false;
+
         function scrollToBottom() {
-        const messagesContainer = document.querySelector('.messages');
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
+            const messages = document.querySelector('.messages');
+            messages.scrollTop = messages.scrollHeight;
+        }
 
-    // Scroll to the bottom when the page loads
-    window.onload = scrollToBottom;
+        function loadMessages() {
+            if (isLoading) return;
+            isLoading = true;
 
-    // Handle the form submission
-    const messageForm = document.getElementById('message-form');
-    messageForm.addEventListener('submit', function(e) {
-        // Prevent default form submission
-        e.preventDefault();
+            fetch(`/load-messages?contact_id={{ contact_me }}&page=${page}&limit=${limit}`)
+                .then(response => response.json())
+                .then(data => {
+                    const messages = data.messages;
+                    const messagesDiv = messagesContainer.querySelector('.messages');
+                    
+                    if (messages.length > 0) {
+                        // Prepend new messages to the top
+                        messages.forEach(message => {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = message.sender_id == '{{ session['user_id'] }}' ? 'message-sent' : 'message-received';
+                            messageDiv.innerHTML = `<p>${message.message}</p><span>${message.timestamp}</span>`;
+                            messagesDiv.prepend(messageDiv);
+                        });
 
-        // You would normally send the message via AJAX here
-        // For now, we'll just scroll to the bottom
+                        // Maintain scroll position to stay at the bottom
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+
+                        if (messages.length < limit) {
+                            messagesContainer.removeEventListener('scroll', onScroll);
+                        }
+                    }
+                    isLoading = false;
+                });
+        }
+
+        function onScroll() {
+            if (messagesContainer.scrollTop === 0) {
+                page += 1;
+                loadMessages();
+            }
+        }
+
+        messageForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            fetch(messageForm.action, {
+                method: 'POST',
+                body: new FormData(messageForm),
+            })
+            .then(() => {
+                messageTextarea.value = ''; // Clear the textarea
+                scrollToBottom(); // Scroll to the bottom after sending
+            });
+        });
+
+        messageTextarea.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                messageForm.submit(); // Submit the form when Enter is pressed without Shift
+            }
+        });
+
+        messagesContainer.addEventListener('scroll', onScroll);
+
+        // Initial load of messages
+        loadMessages();
+        // Scroll to the bottom on page load
         scrollToBottom();
-
-        // After submitting the form, you might want to reload the page or
-        // update the messages list via AJAX, depending on your setup.
-        // For example, you could use fetch() to send the message and then reload the messages.
     });
-    </script>
+
+</script>
 
 {% endblock %}
-
-<!--
-Messages data insert template:
-messages = [
-    {"sender": "user1", "text": "Hello!", "timestamp": "10:00 AM"},
-    {"sender": "user2", "text": "Hi there!", "timestamp": "10:01 AM"},
-    {"sender": "user1", "text": "How are you?", "timestamp": "10:02 AM"},
-    {"sender": "user2", "text": "I'm good, thanks!", "timestamp": "10:03 AM"}
-]
--->

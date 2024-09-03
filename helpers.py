@@ -2,6 +2,7 @@
 from flask import redirect, session
 from functools import wraps
 from datetime import datetime
+import pytz
 
 def login_required(f):
     @wraps(f)
@@ -13,9 +14,6 @@ def login_required(f):
     return decorated_function
 
 
-
-from datetime import datetime
-import pytz
 
 def format_timestamp(timestamp):
     # Define the Spain timezone

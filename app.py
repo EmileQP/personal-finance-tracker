@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required, format_timestamp
@@ -80,6 +80,7 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
+    session.clear()
     if request.method == "POST":
         username1 = request.form.get("username")
         password = request.form.get("password")
@@ -184,14 +185,52 @@ def contacts():
                 user_id, contact_id
             )
     msg = {}
-            
+    """        
     latest = db.execute("SELECT message FROM messages WHERE sender_id = ? OR receiver_id = ? ORDER BY timestamp ASC", user_id, user_id)[0]['message']
     sender = db.execute("SELECT sender_id FROM messages WHERE sender_id = ? OR receiver_id = ? ORDER BY timestamp ASC", user_id, user_id)[0]['sender_id']
     name = db.execute("SELECT username FROM users WHERE id = ?", sender)[0]['username']
+    """
     contacts = db.execute('''
         SELECT u.id, u.username
         FROM contacts c
         JOIN users u ON c.contact_id = u.id
         WHERE c.user_id = ?
     ''', (user_id,))
-    return render_template('contacts.html', contacts=contacts, message=latest, sender=name)
+    return render_template('contacts.html', contacts=contacts)
+
+@app.route('/autocomplete')
+@login_required
+def autocomplete():
+    query = request.args.get('query', '')
+    if query:
+        user_id = session['user_id']
+        # Fetch username and id, excluding the current user
+        suggestions = db.execute(
+            "SELECT id, username FROM users WHERE username LIKE ? AND id != ? LIMIT 10", 
+            f'%{query}%', user_id
+        )
+        # Format the results as a list of dictionaries with 'id' and 'username'
+        suggestions = [{'id': row['id'], 'username': row['username']} for row in suggestions]
+        return jsonify(suggestions=suggestions)
+    return jsonify(suggestions=[])
+
+def load_messages():
+    # Get the page number and limit from query parameters
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 20))  # Number of messages to load per request
+    
+    user_id = session['user_id']
+    contact_id = request.args.get('contact_id')
+    
+    # Calculate offset
+    offset = (page - 1) * limit
+    
+    # Fetch messages
+    messages = db.execute('''
+        SELECT * FROM messages
+        WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+        ORDER BY timestamp DESC
+        LIMIT ? OFFSET ?
+    ''', (user_id, contact_id, contact_id, user_id, limit, offset))
+    
+    return jsonify({'messages': messages})

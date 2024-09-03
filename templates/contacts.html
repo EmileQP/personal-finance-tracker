@@ -12,8 +12,8 @@
 
     <div class="mb-4">
         <form action="{{ url_for('contacts') }}" method="get" class="d-flex">
-            <input type="text" name="query" placeholder="Search for users..." class="form-control me-2">
-            <button type="submit" class="button">Search</button>
+            <input id="search-box" type="text" name="query" placeholder="Search for users..." autocomplete="off" class="form-control me-2" onkeyup="fetchSuggestions()">
+            <div id="suggestions-box"></div>
         </form>
     </div>
 
@@ -40,5 +40,30 @@
     function showMessages(contactId) {
         window.location.href = `/messages/${contactId}`;
     }
+    function fetchSuggestions() {
+    let query = document.getElementById('search-box').value;
+    if (query.length >= 2) {  // Fetch suggestions if the input length is greater than 1
+        fetch(`/autocomplete?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                let suggestionsBox = document.getElementById('suggestions-box');
+                suggestionsBox.innerHTML = '';
+                data.suggestions.forEach(suggestion => {
+                    let div = document.createElement('div');
+                    div.innerHTML = suggestion.username;
+                    div.classList.add('suggestion');
+                    div.onclick = function() {
+                        // Redirect to the messages page for the selected user
+                        window.location.href = `/messages/${suggestion.id}`;
+                    };
+                    suggestionsBox.appendChild(div);
+                });
+            });
+    } else {
+        document.getElementById('suggestions-box').innerHTML = '';  // Clear suggestions if input is empty
+    }
+}
 </script>
+
 {% endblock %}
+   
