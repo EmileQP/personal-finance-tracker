@@ -464,11 +464,13 @@ footer {
 .messages-container textarea {
     padding:10px;
     border: 1px solid #e1e8ed;
-    width:550px;
+    width:450px;
     font-size: 16px;
     resize: none;
     border-radius:10px;
-    margin-left:20px;
+    margin-right:20px;
+    margin-left:10px;
+    padding-bottom:30px;
     
 }
 .messages-container button {

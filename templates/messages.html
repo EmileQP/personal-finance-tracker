@@ -6,7 +6,7 @@
 
 {% block main %}
 <div class="messages-header">
-    <a href="/contacts"><img class="backwards-arrow" src="http://127.0.0.1:5000/static/images/arrow-ios-back.svg" alt="Back to main"></a>
+    <a href="/contacts"><img class="backwards-arrow" src="{{ url_for('static', filename='images/arrow-ios-back.svg') }}" alt="Back to main"></a>
     <h1>Messages with {{ contact2 }}</h1>
 </div>
 
@@ -24,7 +24,6 @@
     </div>
     <form id="message-form" action="/messages/{{ contact_me }}" method="post">
         <textarea autofocus id="message-textarea" name="message" placeholder="Type your message here..."></textarea>
-        <button type="submit" class="button">Send</button>
     </form>
 </div>
 

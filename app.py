@@ -229,7 +229,7 @@ def load_messages():
     messages = db.execute('''
         SELECT * FROM messages
         WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
-        ORDER BY timestamp DESC
+        ORDER BY timestamp ASC  -- Ascending order for older messages
         LIMIT ? OFFSET ?
     ''', (user_id, contact_id, contact_id, user_id, limit, offset))
     
